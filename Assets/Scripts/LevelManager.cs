@@ -9,7 +9,7 @@ public class LevelManager : MonoBehaviour
     public GameObject[] levels;
     public bool isChangeLevel;
     public Transform levelsParent;
-    Level previousLevel, currentLevel;
+    public Level currentLevel, previousLevel;
     
     private void Awake()
     {
@@ -33,6 +33,7 @@ public class LevelManager : MonoBehaviour
         Player.Instance.gameObject.transform.position = currentLevel.startPoint.position;
         Player.Instance.zPos = Player.Instance.transform.position.z;
         Camera.main.transform.parent = null;
+        previousLevel = currentLevel;
     }
 
     private void Update()
@@ -73,10 +74,15 @@ public class LevelManager : MonoBehaviour
 
     void SpawnLevel()
     {
+        if(currentLevel != null)
+        {
+            previousLevel = currentLevel;
+        }
+
         _levelIndex = PlayerPrefs.GetInt("LevelNumber");
         mainLevelIndex = PlayerPrefs.GetInt("MainLevelNumber");
         GameObject newLevel = Instantiate(levels[_levelIndex], levelsParent);
-        newLevel.transform.localPosition = new Vector3(0, 0, _levelIndex * 110);
+        newLevel.transform.localPosition = new Vector3(0, 0, mainLevelIndex * 110);
         currentLevel = newLevel.GetComponent<Level>();
         GameManager.Instance.startPoint = currentLevel.startPoint;
     }

@@ -6,6 +6,10 @@ using DG.Tweening;
 
 public class CanvasManager : MonoBehaviour
 {
+    public int collectedDiamondValue;
+    public Text collectedDiamondValueText;
+    public Gradient gradient;
+    public float pickedBallCount;
 
     public Image diamondImg;
     public Transform diamondParent;
@@ -16,10 +20,13 @@ public class CanvasManager : MonoBehaviour
     public Text endgameBarText;
     public Image endgameBar;
     public GameObject failScreen, successScreen;
-    public Text coinText, levelText;
+    public Text diamondText, levelText;
+    bool isEnded;
+    LevelManager levelManager;
 
     public static CanvasManager Instance;
-    bool isEnded;
+
+    public Image[] fillImages;
 
     private void Awake()
     {
@@ -36,7 +43,14 @@ public class CanvasManager : MonoBehaviour
     private void Start()
     {
         endgameBarValue = 100;
+        levelManager = LevelManager.Instance;
+
     }
+    private void Update()
+    {
+        UpdateEndgameBar();
+    }
+
 
     public void OpenFailScreen()
     {
@@ -52,38 +66,45 @@ public class CanvasManager : MonoBehaviour
     {
         levelText.text = "LEVEL " + (LevelManager.Instance.mainLevelIndex + 1);
     }
-
-    public void UpdateCoinText(int val)
+    public void UpdateDiamondText()
     {
-        coinText.text = val.ToString();
+        PlayerPrefs.SetInt("Diamond", collectedDiamondValue + PlayerPrefs.GetInt("Diamond", 0));
+        diamondText.text = PlayerPrefs.GetInt("Diamond", 0).ToString();
     }
 
     private void UpdateEndgameBar()
     {
-        //endgameBarValue = Mathf.Lerp(endgameBarValue, 0, Time.deltaTime * 0.5f);
+        endgameBar.fillAmount = Mathf.Lerp(endgameBar.fillAmount, (float)pickedBallCount / levelManager.currentLevel.neededBallCount, Time.deltaTime * 5);
+        endgameBarText.text = "%" + (int)(endgameBar.fillAmount * 100);
+        endgameBar.color = gradient.Evaluate(endgameBar.fillAmount);
 
-        endgameBar.fillAmount = endgameBarValue / 100;
-        endgameBarText.text = "%" + (int)endgameBarValue;
-    }
+        float value = endgameBar.fillAmount;
 
-    public void UpdateEndGameBarValue()
-    {
-        if (!isEnded)
+        if (value <= 0.2f)
         {
-            DOTween.To(() => endgameBarValue, x => endgameBarValue = x, 0, 2f).OnComplete(() =>
-            {
-                GameManager.Instance.gameState = InGameStates.Collecting;
-                isEnded = false;
-            });
-
-            isEnded = true;
+            fillImages[0].fillAmount = value * 5;
         }
 
-        UpdateEndgameBar();
+        for (int i = 0; i < fillImages.Length; i++)
+        {
+            fillImages[i].fillAmount = (value - 0.2f * i) * 5;
+        }
+
+
     }
+
+    public void EndGameBarToEmpty()
+    {
+        if (pickedBallCount > 0)
+        {
+            pickedBallCount -= 8 * Time.deltaTime;
+        }
+        else GameManager.Instance.gameState = InGameStates.Collecting;
+    }
+
     public void ContinueButton()
     {
-        Invoke("CloseSuccessScreen", 0.2f);
+        CloseSuccessScreen();
     }
     void CloseSuccessScreen()
     {
@@ -92,12 +113,29 @@ public class CanvasManager : MonoBehaviour
     }
     public void SpawnDiamond()
     {
+
+        collectedDiamondValueText.gameObject.SetActive(true);
+        collectedDiamondValueText.text = collectedDiamondValue.ToString();
+
+
+        collectedDiamondValueText.DOColor(new Color32(0, 0, 0, 0), 1).OnComplete(() =>
+        {
+            collectedDiamondValueText.color = new Color32(0, 0, 0, 255);
+            collectedDiamondValueText.gameObject.SetActive(false);
+            UpdateDiamondText();
+        });
+
         for (int i = 0; i < 10; i++)
         {
             Image newDiamond = Instantiate(diamondImg, diamondParent);
             Vector3 randomPos = new Vector3(Random.Range(-150, 150), Random.Range(-150, 150), 0);
             newDiamond.transform.localPosition = randomPos;
         }
+    }
+
+    public void Restart()
+    {
+        Application.LoadLevel(0);
     }
 }
 

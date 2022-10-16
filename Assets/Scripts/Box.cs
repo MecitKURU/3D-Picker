@@ -13,6 +13,9 @@ public class Box : MonoBehaviour
     [SerializeField] Transform boxPlane;
     [SerializeField] int neededBallCount;
     [SerializeField] Text ballCountText;
+
+    bool startCheck;
+
     void Start()
     {
         UpdateBallCountText();
@@ -23,11 +26,14 @@ public class Box : MonoBehaviour
     {
         if(other.tag == "Ball")
         {
+            startCheck = true;
             _currentBallCount++;
             UpdateBallCountText();
 
             if(_currentBallCount >= neededBallCount && !_isPassed)
             {
+                Movement.Instance.startCheck = false;
+                Movement.Instance.timer = 0;
                 Debug.Log("passed");
                 Passed();
             }

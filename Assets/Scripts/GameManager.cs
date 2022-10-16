@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
 
-    bool _isCollected;
+    bool _isCollected, _isCompleted;
     public static GameManager Instance;
     public InGameStates gameState;
     public int coinCount;
@@ -31,29 +31,33 @@ public class GameManager : MonoBehaviour
     {
         gameState = InGameStates.Started;
         _isCollected = false;
+        _isCompleted = false;
         LevelManager.Instance.isChangeLevel = false;
         player.StartGame();
     }
 
     private void Update() {
-        
-        if(gameState == InGameStates.NotStarted && !IsPointerOverUIObject())
+
+        if (gameState == InGameStates.NotStarted && !IsPointerOverUIObject())
         {
-            if(Input.touchCount > 0)
+            if (Input.touchCount > 0)
             {
-                StartGame();
+                Touch touch = Input.GetTouch(0);
+
+                if (touch.phase == TouchPhase.Began) StartGame();
             }
         }
 
         if(gameState == InGameStates.EndGame)
         {
-            CanvasManager.Instance.UpdateEndGameBarValue();
+            CanvasManager.Instance.EndGameBarToEmpty();
         }
 
         if(gameState == InGameStates.Collecting)
         {
             if(!_isCollected)
             {
+                player.canMove = false;
                 CanvasManager.Instance.SpawnDiamond();
                 _isCollected = true;
             }
@@ -62,26 +66,23 @@ public class GameManager : MonoBehaviour
 
         if(gameState == InGameStates.Completed)
         {
-            player.canMove = false;
 
-            player.transform.DOMove(startPoint.position, 2f).OnComplete(()=>
+            if (!_isCompleted)
             {
-                gameState = InGameStates.NotStarted;
-                CanvasManager.Instance.OpenSuccessScreen();
-                player.xPos = player.transform.position.x;
-                player.zPos = player.transform.position.z;
-            });
+                LevelManager.Instance.previousLevel.Passed();
+
+                player.transform.DOMove(startPoint.position, 2f).OnComplete(() =>
+                {
+                    gameState = InGameStates.NotStarted;
+                    CanvasManager.Instance.OpenSuccessScreen();
+                    player.xPos = player.transform.position.x;
+                    player.zPos = player.transform.position.z;
+                });
+
+                _isCompleted = true;
+            }
         }
     }
-
-
-
-    public void UpdateCoin(int val)
-    {
-        coinCount += val;
-        CanvasManager.Instance.UpdateCoinText(coinCount);
-    }
-
 
     private bool IsPointerOverUIObject()
     {
