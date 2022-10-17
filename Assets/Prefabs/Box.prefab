@@ -635,14 +635,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 8a7ef750b018c41e78d4f8f786ae57e5, type: 3}
     m_FontSize: 145
     m_FontStyle: 0
     m_BestFit: 0
@@ -966,13 +966,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ccd897ebf0f35c4eae9c4cddb662154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ball: {fileID: 636687812386028048, guid: f7fb395b7ab92294d88d30b88c8f650f, type: 3}
   rightGate: {fileID: 2688667511387665446}
   leftGate: {fileID: 2688667510422760614}
   boxPlane: {fileID: 2688667512386222553}
   neededBallCount: 0
   ballCountText: {fileID: 2688667511116086562}
-  sphereCount: 0
 --- !u!1 &2688667511409588226
 GameObject:
   m_ObjectHideFlags: 0

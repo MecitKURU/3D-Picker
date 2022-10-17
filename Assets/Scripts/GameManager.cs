@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
         _isCollected = false;
         _isCompleted = false;
         LevelManager.Instance.isChangeLevel = false;
+        CanvasManager.Instance.tapTotStartPanel.SetActive(false);
         player.StartGame();
     }
 

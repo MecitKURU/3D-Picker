@@ -9,11 +9,11 @@ public class Diamond : MonoBehaviour
     private void Start()
     {
         target = CanvasManager.Instance.diamondTarget.position;
-        transform.DOMove(target, 1f).SetEase(Ease.InFlash).OnComplete(() =>
-        {
-            
-            GameManager.Instance.gameState = InGameStates.Completed;
-        });
         transform.DOScale(Vector3.one * 0.4f, 1f);
+        transform.DOMove(target, 1.1f).SetEase(Ease.InFlash).OnComplete(() =>
+        {
+            GameManager.Instance.gameState = InGameStates.Completed;
+            Destroy(this.gameObject);
+        });
     }
 }

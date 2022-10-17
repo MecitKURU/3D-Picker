@@ -27,7 +27,7 @@ public class CanvasManager : MonoBehaviour
     public static CanvasManager Instance;
 
     public Image[] fillImages;
-
+    public GameObject tapTotStartPanel;
     private void Awake()
     {
         if (Instance == null)
@@ -44,7 +44,9 @@ public class CanvasManager : MonoBehaviour
     {
         endgameBarValue = 100;
         levelManager = LevelManager.Instance;
-
+        tapTotStartPanel.SetActive(true);
+        UpdateDiamondText();
+        UpdateLevelText();
     }
     private void Update()
     {
@@ -62,13 +64,12 @@ public class CanvasManager : MonoBehaviour
         successScreen.SetActive(true);
     }
 
-    public void UpgradeLevelText()
+    public void UpdateLevelText()
     {
         levelText.text = "LEVEL " + (LevelManager.Instance.mainLevelIndex + 1);
     }
     public void UpdateDiamondText()
     {
-        PlayerPrefs.SetInt("Diamond", collectedDiamondValue + PlayerPrefs.GetInt("Diamond", 0));
         diamondText.text = PlayerPrefs.GetInt("Diamond", 0).ToString();
     }
 
@@ -105,22 +106,23 @@ public class CanvasManager : MonoBehaviour
     public void ContinueButton()
     {
         CloseSuccessScreen();
+        tapTotStartPanel.SetActive(true);
     }
     void CloseSuccessScreen()
     {
         successScreen.SetActive(false);
-        UpgradeLevelText();
+        UpdateLevelText();
     }
     public void SpawnDiamond()
     {
 
         collectedDiamondValueText.gameObject.SetActive(true);
         collectedDiamondValueText.text = collectedDiamondValue.ToString();
+        PlayerPrefs.SetInt("Diamond", collectedDiamondValue + PlayerPrefs.GetInt("Diamond", 0));
 
-
-        collectedDiamondValueText.DOColor(new Color32(0, 0, 0, 0), 1).OnComplete(() =>
+        collectedDiamondValueText.DOColor(new Color32(255, 255, 255, 0), 1).OnComplete(() =>
         {
-            collectedDiamondValueText.color = new Color32(0, 0, 0, 255);
+            collectedDiamondValueText.color = new Color32(255, 255, 255, 255);
             collectedDiamondValueText.gameObject.SetActive(false);
             UpdateDiamondText();
         });
